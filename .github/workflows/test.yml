@@ -1,0 +1,43 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build and test
+        run: |
+          cc -Wall -Wextra -O2 test_tinyfits.c -o test_tinyfits -lm
+          ./test_tinyfits
+          cc -Wall -Wextra -O2 test_custom_alloc.c -o test_custom_alloc -lm
+          ./test_custom_alloc
+
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build and test
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cl /W4 /D_CRT_SECURE_NO_WARNINGS test_tinyfits.c /Fe:test_tinyfits.exe
+          test_tinyfits.exe
+          cl /W4 /D_CRT_SECURE_NO_WARNINGS test_custom_alloc.c /Fe:test_custom_alloc.exe
+          test_custom_alloc.exe
+
+  test-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build and test
+        run: |
+          cc -Wall -Wextra -O2 test_tinyfits.c -o test_tinyfits -lm
+          ./test_tinyfits
+          cc -Wall -Wextra -O2 test_custom_alloc.c -o test_custom_alloc -lm
+          ./test_custom_alloc
